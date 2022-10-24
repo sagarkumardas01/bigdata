@@ -29,12 +29,22 @@ create table csv_table
     Amit,"Banglore,Karnatak"
     --------------------------
     
+    JSON File Format
+    ---------------------
+    file
+    ----
+    {"name": "Sagar", "id": 100, "Skills":["Hadoop","Python"]}
+    
     Download hive catalog jar file if serde file is not imported
-     Google search for -> hive-catalog-core-0.14.0.jar
+     Google search for -> https://repo1.maven.org/maven2/org/apache/hive/hcatalog/hive-hcatalog-core/0.14.0/
      
     #Add jar file into hive shell
     hive> add jar jar file location -> /tmp/hive_class
-    hive> add jar /tmp/hive_class
+    hive> add jar /tmp/hive_class/hive-catalog-core-0.14.0.jar
+    
+    #Download Sales_Order.csv from below link
+    
+    https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
     
     
     
