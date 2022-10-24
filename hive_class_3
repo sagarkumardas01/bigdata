@@ -1,0 +1,41 @@
+## Internal table =~ Managed table.
+# Use this command to get details about seriaazion and deserialization
+     describe formatted table_name
+---------------------------------
+Parquet Table Storage information
+---------------------------------
+SerDe Library:          org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+InputFormat:            org.apache.hadoop.mapred.TextInputFormat ----> Parquet Serde
+OutputFormat:           org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat ---> Parquet Serde
+Compressed:             No
+---------------------------------    
+create table csv_table
+    > (name string,
+    > location string
+    > )
+    > row format serde 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+    > with serdeproperties(
+    > "separatorChar" = ",",
+    > "quoteChar" = "\"",
+    > "escapeChar" = "\\"
+    > )
+    > stored as textfile
+    > tblproperties("skip.header.line.count" = "1");
+    
+    
+    RAW DATA
+    ---------
+    Sagar,"PDP,Odisha"
+    Amit,"Banglore,Karnatak"
+    --------------------------
+    
+    Download hive catalog jar file if serde file is not imported
+     Google search for -> hive-catalog-core-0.14.0.jar
+     
+    #Add jar file into hive shell
+    hive> add jar jar file location -> /tmp/hive_class
+    hive> add jar /tmp/hive_class
+    
+    
+    
+    
