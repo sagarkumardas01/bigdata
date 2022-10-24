@@ -55,6 +55,101 @@ create table csv_table
     > )                                                                                                                                       
     > partitioned by (COUNTRY string); 
     
+    
+   # create csv table for sales data
+
+create table sales_order_data_csv_v1
+(
+ORDERNUMBER int,
+QUANTITYORDERED int,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES float,
+STATUS string,
+QTR_ID int,
+MONTH_ID int,
+YEAR_ID int,
+PRODUCTLINE string,
+MSRP int,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+row format delimited
+fields terminated by ','
+tblproperties("skip.header.line.count"="1")
+; 
+
+# load sales_order_data.csv data into above mentioned tables
+
+create table sales_order_data_orc
+(
+ORDERNUMBER int,
+QUANTITYORDERED int,
+PRICEEACH float,
+ORDERLINENUMBER int,
+SALES float,
+STATUS string,
+QTR_ID int,
+MONTH_ID int,
+YEAR_ID int,
+PRODUCTLINE string,
+MSRP int,
+PRODUCTCODE string,
+PHONE string,
+CITY string,
+STATE string,
+POSTALCODE string,
+COUNTRY string,
+TERRITORY string,
+CONTACTLASTNAME string,
+CONTACTFIRSTNAME string,
+DEALSIZE string
+)
+stored as orc;
+
+# copy data from sales_order_data_csv_v1 to sales_order_data_orc
+
+
+select year_id, sum(sales) as total_sales from sales_order_data_orc group by year_id; 
+
+# here only 1 map and 1 reduce task will get created
+
+In order to change the average load for a reducer (in bytes):                                                                                 
+  set hive.exec.reducers.bytes.per.reducer=<number>                                                                                           
+In order to limit the maximum number of reducers:                                                                                             
+  set hive.exec.reducers.max=<number>                                                                                                         
+In order to set a constant number of reducers:                                                                                                
+  set mapreduce.job.reduces=<number> 
+  
+ # change number of reducers to 3
+ 
+ set mapreduce.job.reduces=3;
+ create table sales_order_grouped_orc_v1 stored as orc as select year_id, sum(sales) as total_sales from sales_order_data_orc group by ye
+ar_id;
+
+# after creating the table, check the number of files in hdfs location
+
+# change number of reducers to 2
+ 
+ set mapreduce.job.reduces=2;
+ create table sales_order_grouped_orc_v2 stored as orc as select year_id, sum(sales) as total_sales from sales_order_data_orc group by ye
+ar_id;
+
+# after creating the table, check the number of files in hdfs location
+
+
+# set this property if doing static partition
+set hive.mapred.mode=strict; 
+    
+    
 # load data in static partition
 
 insert overwrite table sales_data_static_part partition(country = 'USA') select ordernumber,quantityordered,sales,year_id from sales_ord
