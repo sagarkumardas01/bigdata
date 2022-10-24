@@ -46,6 +46,39 @@ create table csv_table
     
     https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
     
+    create table sales_data_static_part                                                                                                     
+    > (                                                                                                                                       
+    > ORDERNUMBER int,                                                                                                                        
+    > QUANTITYORDERED int,                                                                                                                    
+    > SALES float,                                                                                                                            
+    > YEAR_ID int                                                                                                                             
+    > )                                                                                                                                       
+    > partitioned by (COUNTRY string); 
+    
+# load data in static partition
+
+insert overwrite table sales_data_static_part partition(country = 'USA') select ordernumber,quantityordered,sales,year_id from sales_ord
+er_data_orc where country = 'USA';
+
+# set this property for dynamic partioning
+set hive.exec.dynamic.partition.mode=nonstrict; 
+
+
+# multilevel partition
+
+create table sales_data_dynamic_multilevel_part_v1                                                                                      
+    > (
+    > ORDERNUMBER int,                                                                                                                        
+    > QUANTITYORDERED int,                                                                                                                    
+    > SALES float                                                                                                                             
+    > )
+    > partitioned by (COUNTRY string, YEAR_ID int); 
+    
+# load data in multilevel partitions
+
+insert overwrite table sales_data_dynamic_multilevel_part_v1 partition(country,year_id) select ordernumber,quantityordered,sales,country
+,year_id from sales_order_data_orc;
+    
     
     
     
