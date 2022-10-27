@@ -145,6 +145,12 @@ ar_id;
 
 # after creating the table, check the number of files in hdfs location
 
+Partition
+---------
+1 - Static partition
+
+2 - Dynamic partition
+
 
 # set this property if doing static partition
 set hive.mapred.mode=strict; 
