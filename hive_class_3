@@ -46,14 +46,6 @@ create table csv_table
     
     https://github.com/shashank-mishra219/Hive-Class/blob/main/sales_order_data.csv
     
-    create table sales_data_static_part                                                                                                     
-    > (                                                                                                                                       
-    > ORDERNUMBER int,                                                                                                                        
-    > QUANTITYORDERED int,                                                                                                                    
-    > SALES float,                                                                                                                            
-    > YEAR_ID int                                                                                                                             
-    > )                                                                                                                                       
-    > partitioned by (COUNTRY string); 
     
     
    # create csv table for sales data
@@ -136,6 +128,12 @@ In order to set a constant number of reducers:
 ar_id;
 
 # after creating the table, check the number of files in hdfs location
+hive> hadoop fs -ls /user/hive/warehouse/hive_class_b1.db/sales_order_grouped_orc_v1
+
+-rwxrwxrwx   1 cloudera supergroup        328 2022-10-27 20:33 /user/hive/warehouse/hive_class_b1.db/sales_order_grouped_orc_v1/000000_0
+-rwxrwxrwx   1 cloudera supergroup        305 2022-10-27 20:33 /user/hive/warehouse/hive_class_b1.db/sales_order_grouped_orc_v1/000001_0
+-rwxrwxrwx   1 cloudera supergroup        305 2022-10-27 20:33 /user/hive/warehouse/hive_class_b1.db/sales_order_grouped_orc_v1/000002_0
+
 
 # change number of reducers to 2
  
@@ -151,7 +149,15 @@ Partition
 
 2 - Dynamic partition
 
-
+create table sales_data_static_part                                                                                                     
+    > (                                                                                                                                       
+    > ORDERNUMBER int,                                                                                                                        
+    > QUANTITYORDERED int,                                                                                                                    
+    > SALES float,                                                                                                                            
+    > YEAR_ID int                                                                                                                             
+    > )                                                                                                                                       
+    > partitioned by (COUNTRY string); 
+    
 # set this property if doing static partition
 set hive.mapred.mode=strict; 
     
@@ -161,8 +167,24 @@ set hive.mapred.mode=strict;
 insert overwrite table sales_data_static_part partition(country = 'USA') select ordernumber,quantityordered,sales,year_id from sales_ord
 er_data_orc where country = 'USA';
 
+#Check in hdfs location you will find one file will be created there as partition was for one specific USA
+
+[cloudera@quickstart ~]$ hadoop fs -ls /user/hive/warehouse/hive_class_b1.db/sales_data_static_part
+Found 1 items
+drwxrwxrwx   - cloudera supergroup          0 2022-10-27 20:51 /user/hive/warehouse/hive_class_b1.db/sales_data_static_part/country=USA
+
+
 # set this property for dynamic partioning
 set hive.exec.dynamic.partition.mode=nonstrict; 
+
+hive> create table sales_data_dynamic
+    > (
+    > ORDERNUMBER int,
+    > QUANTITYORDERED int,
+    > SALES float
+    > )
+    > partitioned by (COUNTRY string);
+
 
 
 # multilevel partition
